@@ -17,6 +17,7 @@ import { MissionModule } from './mission/mission.module';
     }),
     MissionModule,
   ],
+  exports: [AppService],
   controllers: [AppController],
   providers: [AppService],
 })

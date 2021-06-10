@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AppModule } from 'src/app.module';
 import { MissionService } from './mission.service';
 import {
   MissionTeacher,
@@ -14,6 +15,7 @@ import { MissionController } from './mission.controller';
       { name: MissionTeacher.name, schema: MissionTeacherSchema },
       { name: Mission.name, schema: MissionSchema },
     ]),
+    forwardRef(() => AppModule),
   ],
   controllers: [MissionController],
   providers: [MissionService],
