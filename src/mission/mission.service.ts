@@ -105,6 +105,13 @@ export class MissionService {
     return Missions;
   }
 
+  public async findStudentMissions(user: UserDto) {
+    const Missions = await this.missionModel
+      .find({ assignee: user._id })
+      .populate('mission');
+    return Missions;
+  }
+
   public async findOne(id: number) {
     return `This action returns a #${id} mission`;
   }

@@ -30,6 +30,16 @@ export class MissionController {
     return this.missionService.findAllMissions();
   }
 
+  @Get('/student')
+  public async findStudentMissions(@Req() req): Promise<Mission[]> {
+    const user = await this.appService.validAauthentication(req.headers);
+    const missions = await this.missionService.findStudentMissions(user);
+
+    return await this.appService.getMissionContentRelation(
+      missions.map(mission => mission.mission),
+    );
+  }
+
   @Post()
   public async createMission(
     @Req() req,

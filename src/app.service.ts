@@ -55,4 +55,32 @@ export class AppService {
       studentList: studentsData,
     };
   }
+
+  public async getMissionContentRelation(missions) {
+    const data = {
+      exerciseIDs: missions
+        .filter(mission => mission.exercise !== '')
+        .map(mission => mission.exercise),
+      unitIDs: missions
+        .filter(mission => mission.unit !== '')
+        .map(mission => mission.unit),
+    };
+    const missionsData = await this.client
+      .send<any, any>('CONTENT_get_mission_relation', data)
+      .toPromise();
+
+    return missions.map(mission => {
+      return {
+        ...mission.toJson(),
+        exercise:
+          mission.exercise &&
+          missionsData.exercises.filter(
+            exercise => exercise.id === mission.exercise,
+          )[0],
+        unit:
+          mission.unit &&
+          missionsData.units.filter(unit => unit.id === mission.unit)[0],
+      };
+    });
+  }
 }
