@@ -32,16 +32,18 @@ export class Mission {
   @Prop({ type: Boolean, required: false, default: false })
   is_reviewed: boolean;
 
-  // toJson() {
-  //   return {
-  //     _id: this._id,
-  //     type: this.type,
-  //     name: this.name,
-  //     owner: this.owner,
-  //     exercise: this.exercise,
-  //     unit: this.unit,
-  //   };
-  // }
+  toJson() {
+    return {
+      _id: this._id,
+      mission: this.mission,
+      assigner: this.assigner,
+      assignee: this.assignee,
+      answer: this.answer,
+      review: this.review,
+      is_complated: this.is_complated,
+      is_reviewed: this.is_reviewed,
+    };
+  }
 }
 
 export const MissionSchema = SchemaFactory.createForClass(Mission);

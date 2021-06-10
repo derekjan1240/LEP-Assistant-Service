@@ -6,8 +6,9 @@ import {
   MissionTeacherDocument,
 } from './schemas/missionTeacher.schema';
 import { Mission, MissionDocument } from './schemas/mission.schema';
-import { CreateMissionDto } from './dto/create-mission.dto';
+import { CreateMissionTeacherDto } from './dto/create-missionTeacher.dto';
 import { UpdateMissionDto } from './dto/update-mission.dto';
+import { UserDto } from 'src/user.dto';
 
 @Injectable()
 export class MissionService {
@@ -39,13 +40,39 @@ export class MissionService {
     newMission.save();
   }
 
-  public async create(createMissionDto: CreateMissionDto) {
-    return 'This action adds a new mission';
+  public async createMissionTeacher(
+    createMissionTeacherDto: CreateMissionTeacherDto,
+    user: UserDto,
+  ) {
+    // console.log(createMissionTeacherDto, user);
+    try {
+      const newMissionTeacher = await this.missionTeacherModel.create({
+        ...createMissionTeacherDto,
+        owner: user._id,
+      });
+      return newMissionTeacher.save().then(missionTeacher => {
+        return missionTeacher.toJson();
+      });
+    } catch (error) {
+      throw new HttpException(
+        `新增任務失敗!`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  public async findAllMissionTeacher() {
-    const Missions = await this.missionTeacherModel.find();
-    return Missions;
+  public async findAllMissionTeacher(query, user: UserDto) {
+    try {
+      const Missions = await this.missionTeacherModel
+        .find({ owner: user._id })
+        .sort({ createdAt: 1 });
+      return Missions;
+    } catch (error) {
+      throw new HttpException(
+        `查詢任務失敗!`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   public async findAllMissions() {
