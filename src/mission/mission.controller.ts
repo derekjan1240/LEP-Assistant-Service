@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { AppService } from 'src/app.service';
 import { MissionService } from './mission.service';
+import { CreateMissionDto } from './dto/create-mission.dto';
 import { CreateMissionTeacherDto } from './dto/create-missionTeacher.dto';
 import { UpdateMissionDto } from './dto/update-mission.dto';
 
@@ -24,16 +25,18 @@ export class MissionController {
     private readonly appService: AppService,
   ) {}
 
+  @Get()
+  public async findAllMissions(): Promise<Mission[]> {
+    return this.missionService.findAllMissions();
+  }
+
   @Post()
-  public async createMissionTeacher(
+  public async createMission(
     @Req() req,
-    @Body() createMissionTeacherDto: CreateMissionTeacherDto,
+    @Body() createMissionDto: CreateMissionDto,
   ) {
     const user = await this.appService.validAauthentication(req.headers);
-    return this.missionService.createMissionTeacher(
-      createMissionTeacherDto,
-      user,
-    );
+    return this.missionService.createMission(createMissionDto, user);
   }
 
   @Get('/teacher')
@@ -45,9 +48,16 @@ export class MissionController {
     return this.missionService.findAllMissionTeacher(query, user);
   }
 
-  @Get('/')
-  public async findAllMissions(): Promise<Mission[]> {
-    return this.missionService.findAllMissions();
+  @Post('/teacher')
+  public async createMissionTeacher(
+    @Req() req,
+    @Body() createMissionTeacherDto: CreateMissionTeacherDto,
+  ) {
+    const user = await this.appService.validAauthentication(req.headers);
+    return this.missionService.createMissionTeacher(
+      createMissionTeacherDto,
+      user,
+    );
   }
 
   @Get(':id')

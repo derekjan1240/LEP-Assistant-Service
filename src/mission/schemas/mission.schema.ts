@@ -20,6 +20,9 @@ export class Mission {
   @Prop({ type: String, required: true })
   assignee: string;
 
+  @Prop({ type: String, required: true })
+  classroom: string;
+
   @Prop({ type: Object, required: false })
   answer: any;
 
@@ -38,6 +41,7 @@ export class Mission {
       mission: this.mission,
       assigner: this.assigner,
       assignee: this.assignee,
+      classroom: this.classroom,
       answer: this.answer,
       review: this.review,
       is_complated: this.is_complated,

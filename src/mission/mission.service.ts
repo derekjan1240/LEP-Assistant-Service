@@ -6,6 +6,7 @@ import {
   MissionTeacherDocument,
 } from './schemas/missionTeacher.schema';
 import { Mission, MissionDocument } from './schemas/mission.schema';
+import { CreateMissionDto } from './dto/create-mission.dto';
 import { CreateMissionTeacherDto } from './dto/create-missionTeacher.dto';
 import { UpdateMissionDto } from './dto/update-mission.dto';
 import { UserDto } from 'src/user.dto';
@@ -40,6 +41,32 @@ export class MissionService {
     newMission.save();
   }
 
+  public async createMission(
+    createMissionDto: CreateMissionDto,
+    user: UserDto,
+  ) {
+    try {
+      const mission = await this.missionTeacherModel.findById(
+        createMissionDto.mission,
+      );
+      if (!mission) {
+        throw new HttpException(`任務不存在!`, HttpStatus.NOT_FOUND);
+      }
+      const newMission = await this.missionModel.create({
+        mission: mission._id,
+        assigner: user._id,
+        assignee: createMissionDto.assignee,
+        classroom: createMissionDto.classroom,
+      });
+      return newMission.toJson();
+    } catch (error) {
+      throw new HttpException(
+        `新增任務失敗!`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   public async createMissionTeacher(
     createMissionTeacherDto: CreateMissionTeacherDto,
     user: UserDto,
@@ -50,9 +77,7 @@ export class MissionService {
         ...createMissionTeacherDto,
         owner: user._id,
       });
-      return newMissionTeacher.save().then(missionTeacher => {
-        return missionTeacher.toJson();
-      });
+      return newMissionTeacher.toJson();
     } catch (error) {
       throw new HttpException(
         `新增任務失敗!`,
