@@ -38,7 +38,7 @@ export class Mission {
   toJson() {
     return {
       _id: this._id,
-      mission: this.mission,
+      // mission: this.mission,
       assigner: this.assigner,
       assignee: this.assignee,
       classroom: this.classroom,

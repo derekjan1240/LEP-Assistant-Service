@@ -71,7 +71,6 @@ export class MissionService {
     createMissionTeacherDto: CreateMissionTeacherDto,
     user: UserDto,
   ) {
-    // console.log(createMissionTeacherDto, user);
     try {
       const newMissionTeacher = await this.missionTeacherModel.create({
         ...createMissionTeacherDto,
@@ -86,7 +85,7 @@ export class MissionService {
     }
   }
 
-  public async findAllMissionTeacher(query, user: UserDto) {
+  public async findAllMissionTeacher(user: UserDto) {
     try {
       const Missions = await this.missionTeacherModel
         .find({ owner: user._id })
@@ -101,15 +100,45 @@ export class MissionService {
   }
 
   public async findAllMissions() {
-    const Missions = await this.missionModel.find().populate('mission');
-    return Missions;
+    try {
+      return await this.missionModel.find().populate('mission');
+    } catch (error) {
+      throw new HttpException(
+        `查詢任務失敗!`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   public async findStudentMissions(user: UserDto) {
-    const Missions = await this.missionModel
-      .find({ assignee: user._id })
-      .populate('mission');
-    return Missions;
+    try {
+      return await this.missionModel
+        .find({ assignee: user._id })
+        .populate('mission');
+    } catch (error) {
+      throw new HttpException(
+        `查詢任務失敗!`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  public async findStudentMission(id: string, user: UserDto) {
+    try {
+      const mission = await this.missionModel.findById(id).populate('mission');
+      if (!mission) {
+        throw new HttpException(`任務不存在!`, HttpStatus.NOT_FOUND);
+      }
+      if (mission.assignee !== user._id) {
+        throw new HttpException(`您無權限瀏覽該任務!`, HttpStatus.UNAUTHORIZED);
+      }
+      return mission;
+    } catch (error) {
+      throw new HttpException(
+        `查詢任務失敗!`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   public async findOne(id: number) {

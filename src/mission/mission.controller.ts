@@ -31,13 +31,34 @@ export class MissionController {
   }
 
   @Get('/student')
-  public async findStudentMissions(@Req() req): Promise<Mission[]> {
+  public async findStudentMissions(@Req() req): Promise<any[]> {
     const user = await this.appService.validAauthentication(req.headers);
     const missions = await this.missionService.findStudentMissions(user);
-
-    return await this.appService.getMissionContentRelation(
+    const content = await this.appService.getMissionContentRelation(
       missions.map(mission => mission.mission),
     );
+    return missions.map((mission, index) => {
+      return {
+        ...mission.toJson(),
+        content: content[index],
+      };
+    });
+  }
+
+  @Get('/content/:id')
+  public async findStudentMission(
+    @Req() req,
+    @Param('id') id: string,
+  ): Promise<any> {
+    const user = await this.appService.validAauthentication(req.headers);
+    const mission = await this.missionService.findStudentMission(id, user);
+    const content = await this.appService.getMissionContentRelation([
+      mission.mission,
+    ]);
+    return {
+      ...mission.toJson(),
+      content: content[0],
+    };
   }
 
   @Post()
@@ -50,12 +71,9 @@ export class MissionController {
   }
 
   @Get('/teacher')
-  public async findAllMissionTeacher(
-    @Req() req,
-    @Query() query,
-  ): Promise<MissionTeacher[]> {
+  public async findAllMissionTeacher(@Req() req): Promise<MissionTeacher[]> {
     const user = await this.appService.validAauthentication(req.headers);
-    return this.missionService.findAllMissionTeacher(query, user);
+    return this.missionService.findAllMissionTeacher(user);
   }
 
   @Post('/teacher')
