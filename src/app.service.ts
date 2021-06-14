@@ -57,7 +57,7 @@ export class AppService {
     return classroomsData;
   }
 
-  public async getMissionContentRelation(missions) {
+  public async getMissionContentRelation(missions, withAnswers = false) {
     const data = {
       exerciseIDs: missions
         .filter(mission => mission.exercise !== '')
@@ -65,6 +65,7 @@ export class AppService {
       unitIDs: missions
         .filter(mission => mission.unit !== '')
         .map(mission => mission.unit),
+      withAnswers,
     };
     const missionsData = await this.client
       .send<any, any>('CONTENT_get_mission_relation', data)

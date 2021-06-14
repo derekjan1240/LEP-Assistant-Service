@@ -89,9 +89,11 @@ export class MissionController {
   ): Promise<any> {
     const user = await this.appService.validAauthentication(req.headers);
     const mission = await this.missionService.findStudentMission(id, user);
-    const content = await this.appService.getMissionContentRelation([
-      mission.mission,
-    ]);
+    const withAnswers = user.role !== 'Student';
+    const content = await this.appService.getMissionContentRelation(
+      [mission.mission],
+      withAnswers,
+    );
     return {
       ...mission.toJson(),
       content: content[0],

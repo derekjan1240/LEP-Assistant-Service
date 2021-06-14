@@ -165,7 +165,7 @@ export class MissionService {
       if (!mission) {
         throw new HttpException(`任務不存在!`, HttpStatus.NOT_FOUND);
       }
-      if (mission.assignee !== user._id) {
+      if (mission.assignee !== user._id && mission.assigner !== user._id) {
         throw new HttpException(`您無權限瀏覽該任務!`, HttpStatus.UNAUTHORIZED);
       }
       return mission;
