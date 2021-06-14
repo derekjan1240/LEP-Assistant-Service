@@ -32,8 +32,14 @@ export class Mission {
   @Prop({ type: Boolean, required: false, default: false })
   is_complated: boolean;
 
+  @Prop({ type: Date, required: false, default: null })
+  complated_date: Date;
+
   @Prop({ type: Boolean, required: false, default: false })
   is_reviewed: boolean;
+
+  @Prop({ type: Date, required: false, default: null })
+  reviewed_date: Date;
 
   toJson() {
     return {
@@ -45,7 +51,9 @@ export class Mission {
       answer: this.answer,
       review: this.review,
       is_complated: this.is_complated,
+      complated_date: this.complated_date,
       is_reviewed: this.is_reviewed,
+      reviewed_date: this.reviewed_date,
     };
   }
 }

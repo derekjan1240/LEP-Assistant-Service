@@ -25,11 +25,13 @@ export class MissionController {
     private readonly appService: AppService,
   ) {}
 
+  // 取得所有指派任務
   @Get()
-  public async findAllMissions(): Promise<Mission[]> {
-    return this.missionService.findAllMissions();
+  public async findAllStudentMissions(): Promise<Mission[]> {
+    return this.missionService.findAllStudentMissions();
   }
 
+  // 取得單一學生所有指派任務
   @Get('/student')
   public async findStudentMissions(@Req() req): Promise<any[]> {
     const user = await this.appService.validAauthentication(req.headers);
@@ -45,6 +47,7 @@ export class MissionController {
     });
   }
 
+  // 取得特定指派任務
   @Get('/content/:id')
   public async findStudentMission(
     @Req() req,
@@ -61,6 +64,23 @@ export class MissionController {
     };
   }
 
+  // 學生完成任務
+  @Put('/content/:id')
+  public async finishStudentMission(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() finishMissionDto: any,
+  ): Promise<any> {
+    const user = await this.appService.validAauthentication(req.headers);
+    const newMission = await this.missionService.studentFinishMission(
+      id,
+      finishMissionDto,
+      user,
+    );
+    return newMission.toJson();
+  }
+
+  // 教師指派任務
   @Post()
   public async createMission(
     @Req() req,
@@ -70,12 +90,14 @@ export class MissionController {
     return this.missionService.createMission(createMissionDto, user);
   }
 
+  // 取得單一教師所有任務模板
   @Get('/teacher')
   public async findAllMissionTeacher(@Req() req): Promise<MissionTeacher[]> {
     const user = await this.appService.validAauthentication(req.headers);
     return this.missionService.findAllMissionTeacher(user);
   }
 
+  // 教師新增任務模板
   @Post('/teacher')
   public async createMissionTeacher(
     @Req() req,
@@ -88,21 +110,21 @@ export class MissionController {
     );
   }
 
-  @Get(':id')
-  public async findOne(@Param('id') id: string) {
-    return this.missionService.findOne(+id);
-  }
+  // @Get(':id')
+  // public async findOne(@Param('id') id: string) {
+  //   return this.missionService.findOne(+id);
+  // }
 
-  @Put(':id')
-  public async update(
-    @Param('id') id: string,
-    @Body() updateMissionDto: UpdateMissionDto,
-  ) {
-    return this.missionService.update(+id, updateMissionDto);
-  }
+  // @Put(':id')
+  // public async update(
+  //   @Param('id') id: string,
+  //   @Body() updateMissionDto: UpdateMissionDto,
+  // ) {
+  //   return this.missionService.update(+id, updateMissionDto);
+  // }
 
-  @Delete(':id')
-  public async remove(@Param('id') id: string) {
-    return this.missionService.remove(+id);
-  }
+  // @Delete(':id')
+  // public async remove(@Param('id') id: string) {
+  //   return this.missionService.remove(+id);
+  // }
 }

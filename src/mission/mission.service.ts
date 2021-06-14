@@ -20,26 +20,26 @@ export class MissionService {
     private missionModel: Model<MissionDocument>,
   ) {}
 
-  public async createFakeMissionTeacher() {
-    const newMission = await this.missionTeacherModel.create({
-      name: 'FAKE_MISSION_TEACHER',
-      type: 'Video',
-      exercise: '',
-      unit: '9bd54ccd-6584-4cf5-9bf5-435d0e2fcadc',
-      owner: '609c247d4099fa16842d9dba',
-    });
-    newMission.save();
-  }
+  // public async createFakeMissionTeacher() {
+  //   const newMission = await this.missionTeacherModel.create({
+  //     name: 'FAKE_MISSION_TEACHER',
+  //     type: 'Video',
+  //     exercise: '',
+  //     unit: '9bd54ccd-6584-4cf5-9bf5-435d0e2fcadc',
+  //     owner: '609c247d4099fa16842d9dba',
+  //   });
+  //   newMission.save();
+  // }
 
-  public async createFakeMission() {
-    const Missions = await this.missionTeacherModel.find();
-    const newMission = await this.missionModel.create({
-      mission: Missions[0]._id,
-      assigner: '609c247d4099fa16842d9dba',
-      assignee: '60aafa453d89db5b647e0c46',
-    });
-    newMission.save();
-  }
+  // public async createFakeMission() {
+  //   const Missions = await this.missionTeacherModel.find();
+  //   const newMission = await this.missionModel.create({
+  //     mission: Missions[0]._id,
+  //     assigner: '609c247d4099fa16842d9dba',
+  //     assignee: '60aafa453d89db5b647e0c46',
+  //   });
+  //   newMission.save();
+  // }
 
   public async createMission(
     createMissionDto: CreateMissionDto,
@@ -85,6 +85,37 @@ export class MissionService {
     }
   }
 
+  public async studentFinishMission(
+    id: string,
+    finishMissionDto: any,
+    user: UserDto,
+  ) {
+    try {
+      const mission = await this.missionModel.findById(id);
+      if (!mission) {
+        throw new HttpException(`任務不存在!`, HttpStatus.NOT_FOUND);
+      }
+      if (mission.assignee !== user._id) {
+        throw new HttpException(`您無權編輯此任務!`, HttpStatus.UNAUTHORIZED);
+      }
+      const newMission = await this.missionModel.findByIdAndUpdate(
+        id,
+        {
+          answer: finishMissionDto.answers,
+          is_complated: true,
+          complated_date: new Date(),
+        },
+        { new: true },
+      );
+      return newMission;
+    } catch (error) {
+      throw new HttpException(
+        `新增任務失敗!`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   public async findAllMissionTeacher(user: UserDto) {
     try {
       const Missions = await this.missionTeacherModel
@@ -99,7 +130,7 @@ export class MissionService {
     }
   }
 
-  public async findAllMissions() {
+  public async findAllStudentMissions() {
     try {
       return await this.missionModel.find().populate('mission');
     } catch (error) {
@@ -112,9 +143,11 @@ export class MissionService {
 
   public async findStudentMissions(user: UserDto) {
     try {
-      return await this.missionModel
-        .find({ assignee: user._id })
-        .populate('mission');
+      const query =
+        user.role === 'Student'
+          ? { assignee: user._id }
+          : { assigner: user._id };
+      return await this.missionModel.find(query).populate('mission');
     } catch (error) {
       throw new HttpException(
         `查詢任務失敗!`,
@@ -141,15 +174,15 @@ export class MissionService {
     }
   }
 
-  public async findOne(id: number) {
-    return `This action returns a #${id} mission`;
-  }
+  // public async findOne(id: number) {
+  //   return `This action returns a #${id} mission`;
+  // }
 
-  public async update(id: number, updateMissionDto: UpdateMissionDto) {
-    return `This action updates a #${id} mission`;
-  }
+  // public async update(id: number, updateMissionDto: UpdateMissionDto) {
+  //   return `This action updates a #${id} mission`;
+  // }
 
-  public async remove(id: number) {
-    return `This action removes a #${id} mission`;
-  }
+  // public async remove(id: number) {
+  //   return `This action removes a #${id} mission`;
+  // }
 }
