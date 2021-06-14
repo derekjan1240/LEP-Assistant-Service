@@ -36,13 +36,47 @@ export class MissionController {
   public async findStudentMissions(@Req() req): Promise<any[]> {
     const user = await this.appService.validAauthentication(req.headers);
     const missions = await this.missionService.findStudentMissions(user);
+    // 關聯任務內容
     const content = await this.appService.getMissionContentRelation(
       missions.map(mission => mission.mission),
     );
+
+    // 關聯 指派人 & 被指派人
+    let assignees = [];
+    let assigners = [];
+
+    if (user.role !== 'Student') {
+      assignees = await this.appService.getUsersRelation(
+        missions.map(mission => mission.assignee),
+      );
+    } else {
+      assigners = await this.appService.getUsersRelation(
+        missions.map(mission => mission.assigner),
+      );
+    }
+
+    // 關聯所屬班級資料
+    const classrooms = await this.appService.getClassroomsRelation(
+      missions.map(mission => mission.classroom),
+    );
+
     return missions.map((mission, index) => {
       return {
         ...mission.toJson(),
         content: content[index],
+        classroom: classrooms.filter(
+          classroom => classroom.id === mission.classroom,
+        )[0],
+        assignee:
+          user.role !== 'Student'
+            ? assignees.filter(assignee => assignee._id === mission.assignee)[0]
+            : user,
+        assigner:
+          user.role !== 'Student'
+            ? user
+            : assigners.filter(
+                assigner => assigner._id === mission.assigner,
+              )[0],
       };
     });
   }

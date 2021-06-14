@@ -147,7 +147,10 @@ export class MissionService {
         user.role === 'Student'
           ? { assignee: user._id }
           : { assigner: user._id };
-      return await this.missionModel.find(query).populate('mission');
+      return await this.missionModel
+        .find(query)
+        .populate('mission')
+        .sort({ createdAt: -1 });
     } catch (error) {
       throw new HttpException(
         `查詢任務失敗!`,

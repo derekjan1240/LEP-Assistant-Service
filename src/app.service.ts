@@ -41,19 +41,20 @@ export class AppService {
     return UserDto.from(user);
   }
 
-  public async getUserRelation(manager: string[], students: string[]) {
-    const managerData = await this.client
-      .send<any, string[]>('AUTH_get_user_relation', manager)
+  public async getUsersRelation(users: string[]) {
+    const usersData = await this.client
+      .send<any, string[]>('AUTH_get_user_relation', users)
       .toPromise();
 
-    const studentsData = await this.client
-      .send<any, string[]>('AUTH_get_user_relation', students)
+    return usersData;
+  }
+
+  public async getClassroomsRelation(classrooms: string[]) {
+    const classroomsData = await this.client
+      .send<any, string[]>('CONTENT_get_classroom_relation', classrooms)
       .toPromise();
 
-    return {
-      manager: managerData[0],
-      studentList: studentsData,
-    };
+    return classroomsData;
   }
 
   public async getMissionContentRelation(missions) {

@@ -6,6 +6,7 @@ export type MissionDocument = Mission & Document;
 @Schema({ timestamps: true })
 export class Mission {
   _id: any;
+  createdAt: any;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -54,6 +55,7 @@ export class Mission {
       complated_date: this.complated_date,
       is_reviewed: this.is_reviewed,
       reviewed_date: this.reviewed_date,
+      createdAt: this.createdAt,
     };
   }
 }
