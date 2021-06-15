@@ -20,27 +20,6 @@ export class MissionService {
     private missionModel: Model<MissionDocument>,
   ) {}
 
-  // public async createFakeMissionTeacher() {
-  //   const newMission = await this.missionTeacherModel.create({
-  //     name: 'FAKE_MISSION_TEACHER',
-  //     type: 'Video',
-  //     exercise: '',
-  //     unit: '9bd54ccd-6584-4cf5-9bf5-435d0e2fcadc',
-  //     owner: '609c247d4099fa16842d9dba',
-  //   });
-  //   newMission.save();
-  // }
-
-  // public async createFakeMission() {
-  //   const Missions = await this.missionTeacherModel.find();
-  //   const newMission = await this.missionModel.create({
-  //     mission: Missions[0]._id,
-  //     assigner: '609c247d4099fa16842d9dba',
-  //     assignee: '60aafa453d89db5b647e0c46',
-  //   });
-  //   newMission.save();
-  // }
-
   public async createMission(
     createMissionDto: CreateMissionDto,
     user: UserDto,
@@ -161,7 +140,7 @@ export class MissionService {
     try {
       const Missions = await this.missionTeacherModel
         .find({ owner: user._id })
-        .sort({ createdAt: 1 });
+        .sort({ createdAt: -1 });
       return Missions;
     } catch (error) {
       throw new HttpException(
@@ -173,7 +152,10 @@ export class MissionService {
 
   public async findAllStudentMissions() {
     try {
-      return await this.missionModel.find().populate('mission');
+      return await this.missionModel
+        .find()
+        .populate('mission')
+        .sort({ updatedAt: -1 });
     } catch (error) {
       throw new HttpException(
         `查詢任務失敗!`,
