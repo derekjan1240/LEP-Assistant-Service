@@ -95,8 +95,13 @@ export class MissionService {
       if (!mission) {
         throw new HttpException(`任務不存在!`, HttpStatus.NOT_FOUND);
       }
+      // 確認為該任務被指派人
       if (mission.assignee !== user._id) {
         throw new HttpException(`您無權編輯此任務!`, HttpStatus.UNAUTHORIZED);
+      }
+      // 防止重複完成
+      if (mission.is_complated) {
+        throw new HttpException(`此任務已完成!`, HttpStatus.BAD_REQUEST);
       }
       const newMission = await this.missionModel.findByIdAndUpdate(
         id,
@@ -110,7 +115,43 @@ export class MissionService {
       return newMission;
     } catch (error) {
       throw new HttpException(
-        `新增任務失敗!`,
+        `編輯任務失敗!`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  public async studentReviewMission(
+    id: string,
+    reviewMissionDto: any,
+    user: UserDto,
+  ) {
+    try {
+      const mission = await this.missionModel.findById(id);
+      if (!mission) {
+        throw new HttpException(`任務不存在!`, HttpStatus.NOT_FOUND);
+      }
+      // 確認為該任務指派人
+      if (mission.assigner !== user._id) {
+        throw new HttpException(`您無權編輯此任務!`, HttpStatus.UNAUTHORIZED);
+      }
+      // 防止重複批閱
+      if (mission.is_reviewed) {
+        throw new HttpException(`此任務已批閱!`, HttpStatus.BAD_REQUEST);
+      }
+      const newMission = await this.missionModel.findByIdAndUpdate(
+        id,
+        {
+          review: reviewMissionDto,
+          is_reviewed: true,
+          reviewed_date: new Date(),
+        },
+        { new: true },
+      );
+      return newMission;
+    } catch (error) {
+      throw new HttpException(
+        `編輯任務失敗!`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

@@ -101,7 +101,7 @@ export class MissionController {
   }
 
   // 學生完成任務
-  @Put('/content/:id')
+  @Put('/content/:id/finish')
   public async finishStudentMission(
     @Req() req,
     @Param('id') id: string,
@@ -111,6 +111,22 @@ export class MissionController {
     const newMission = await this.missionService.studentFinishMission(
       id,
       finishMissionDto,
+      user,
+    );
+    return newMission.toJson();
+  }
+
+  // 教師批改任務
+  @Put('/content/:id/review')
+  public async reviewStudentMission(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() reviewMissionDto: any,
+  ): Promise<any> {
+    const user = await this.appService.validAauthentication(req.headers);
+    const newMission = await this.missionService.studentReviewMission(
+      id,
+      reviewMissionDto,
       user,
     );
     return newMission.toJson();
