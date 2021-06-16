@@ -150,10 +150,10 @@ export class MissionService {
     }
   }
 
-  public async findAllStudentMissions() {
+  public async findAllStudentMissions(query) {
     try {
       return await this.missionModel
-        .find()
+        .find(query)
         .populate('mission')
         .sort({ updatedAt: -1 });
     } catch (error) {

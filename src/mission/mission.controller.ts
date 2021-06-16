@@ -27,8 +27,48 @@ export class MissionController {
 
   // 取得所有指派任務
   @Get()
-  public async findAllStudentMissions(): Promise<Mission[]> {
-    return this.missionService.findAllStudentMissions();
+  public async findAllStudentMissions(
+    @Req() req,
+    @Query() query,
+  ): Promise<any[]> {
+    const user = await this.appService.validAauthentication(req.headers);
+    const missions = await this.missionService.findAllStudentMissions(query);
+
+    // 關聯任務內容
+    const content = await this.appService.getMissionContentRelation(
+      missions.map(mission => mission.mission),
+    );
+
+    // 關聯 指派人 & 被指派人
+    let assignees = [];
+    let assigners = [];
+
+    if (user.role !== 'Student') {
+      assignees = await this.appService.getUsersRelation(
+        missions.map(mission => mission.assignee),
+      );
+    } else {
+      assigners = await this.appService.getUsersRelation(
+        missions.map(mission => mission.assigner),
+      );
+    }
+
+    return missions.map((mission, index) => {
+      return {
+        ...mission.toJson(),
+        content: content[index],
+        assignee:
+          user.role !== 'Student'
+            ? assignees.filter(assignee => assignee._id === mission.assignee)[0]
+            : user,
+        assigner:
+          user.role !== 'Student'
+            ? user
+            : assigners.filter(
+                assigner => assigner._id === mission.assigner,
+              )[0],
+      };
+    });
   }
 
   // 取得單一學生所有指派任務
