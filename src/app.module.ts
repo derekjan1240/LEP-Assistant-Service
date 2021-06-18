@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { HttpModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
@@ -15,6 +15,7 @@ import { MissionModule } from './mission/mission.module';
       }),
       inject: [ConfigService],
     }),
+    HttpModule,
     MissionModule,
   ],
   exports: [AppService],

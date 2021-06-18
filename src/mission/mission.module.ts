@@ -17,6 +17,7 @@ import { MissionController } from './mission.controller';
     ]),
     forwardRef(() => AppModule),
   ],
+  exports: [MissionService],
   controllers: [MissionController],
   providers: [MissionService],
 })
