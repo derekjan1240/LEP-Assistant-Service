@@ -85,4 +85,26 @@ export class AppService {
       };
     });
   }
+
+  /* 實驗用 */
+  public async testWithRddis() {
+    // Auth
+    const dataAuth = await this.client
+      .send<any, number>('AUTH_test', 0)
+      .toPromise();
+    // Content
+    const dataContent = await this.client
+      .send<any, number>('CONTENT_test', 0)
+      .toPromise();
+    // Visual
+    const dataVisual = await this.client
+      .send<any, number>('VISUALIZATION_test', 0)
+      .toPromise();
+
+    return {
+      authentication: dataAuth,
+      content: dataContent,
+      visualization: dataVisual,
+    };
+  }
 }

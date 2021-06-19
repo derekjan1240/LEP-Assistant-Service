@@ -120,4 +120,48 @@ export class AppController {
       return error;
     }
   }
+
+  @Get('/test/withRedis')
+  public async testWithRedis() {
+    const data = await this.appService.testWithRddis();
+    return data;
+  }
+
+  @Get('/test/withoutRedis')
+  public async testWithoutRedis() {
+    // Auth
+    const responseAuth = await this.httpService
+      .post('http://localhost:8081/test', {
+        data: {
+          id: 0,
+        },
+      })
+      .toPromise();
+    const dataAuth = responseAuth.data;
+    console.log(dataAuth);
+    // Content
+    const responseContent = await this.httpService
+      .post('http://localhost:8083/test', {
+        data: {
+          id: 0,
+        },
+      })
+      .toPromise();
+    const dataContent = responseContent.data;
+    // Visual
+    const responseVisual = await this.httpService
+      .post('http://localhost:8086/test', {
+        data: {
+          id: 0,
+        },
+      })
+      .toPromise();
+    const dataVisual = responseVisual.data;
+
+    return {
+      authentication: dataAuth,
+      content: dataContent,
+      visualization: dataVisual,
+    };
+  }
 }
