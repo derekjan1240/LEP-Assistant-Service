@@ -16,6 +16,8 @@ export class AppService {
       transport: Transport.REDIS,
       options: {
         url: 'redis://localhost:6379',
+        retryAttempts: 10,
+        retryDelay: 3000, // in miliseconds
       },
     });
   }
