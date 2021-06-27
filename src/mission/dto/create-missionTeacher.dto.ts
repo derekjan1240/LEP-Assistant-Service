@@ -25,11 +25,11 @@ export class CreateMissionTeacherDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsString({ message: '姓名型態錯誤' })
+  @IsString({ message: '習題 ID 型態錯誤' })
   exercise: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsString({ message: '姓名型態錯誤' })
+  @IsString({ message: '單元 ID 型態錯誤' })
   unit: string;
 }
